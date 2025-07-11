@@ -1,0 +1,38 @@
+<div class="w-full max-w-2xl mx-auto">
+  <h1 class="text-2xl font-semibold text-gray-800 mb-6">
+    Webhook Settings for: <span class="font-bold"><%= @account.name %></span>
+  </h1>
+
+  <div class="bg-white p-8 rounded-lg shadow-md">
+    <%= form_with(model: @account, url: account_path(@account), method: :patch, class: "space-y-6") do |form| %>
+
+      <%# Display the automatically generated webhook URL %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Auto-Generated Webhook URL</label>
+        <div class="mt-1 p-3 bg-gray-100 border rounded-md text-gray-600 text-sm break-words">
+            <%= Rails.application.credentials.app[:public_base_url] + webhooks_receive_path(secret: @account.webhook_secret) %>
+
+        </div>
+        <p class="mt-2 text-sm text-gray-500">
+          Use this URL to have our application receive messages. Copy and paste it into the field below to use it.
+        </p>
+      </div>
+
+      <%# Field for manual input %>
+      <div>
+        <%= form.label :webhook_url, "Active Webhook URL", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :webhook_url, class: "block w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring", placeholder: "Enter your webhook URL here" %>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">
+          The Evolution API will send all events (new messages, etc.) to this URL.
+        </p>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <%= link_to "Back to Accounts", accounts_path, class: "px-5 py-2 mr-4 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200" %>
+        <%= form.submit "Save and Update Webhook", class: "px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring cursor-pointer", data: { turbo_submits_with: "Saving..." } %>
+      </div>
+    <% end %>
+  </div>
+</div>
