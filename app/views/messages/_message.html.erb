@@ -1,0 +1,8 @@
+<div class="flex <%= message.from_me? ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-lg <%= message.from_me? ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800' %>">
+    <p><%= message.body %></p>
+    <p class="text-xs text-right mt-1 <%= message.from_me? ? 'text-blue-100' : 'text-gray-500' %>">
+      <%= message.sent_at.strftime("%I:%M %p") %>
+    </p>
+  </div>
+</div>

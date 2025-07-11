@@ -1,0 +1,7 @@
+<%# The data-turbo-frame attribute is the key. It targets the frame on the right. %>
+<%= link_to conversation, class: "block p-4 border-b border-gray-200 hover:bg-blue-50", data: { turbo_frame: "conversation_content" } do %>
+  <div class="font-semibold text-gray-800"><%= conversation.contact_name %></div>
+  <p class="text-sm text-gray-600 truncate">
+    <%= conversation.messages.last&.body %>
+  </p>
+<% end %>
