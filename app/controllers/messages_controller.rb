@@ -4,29 +4,36 @@ class MessagesController < ApplicationController
                                   .where(accounts: { user_id: current_user.id })
                                   .find(params[:conversation_id])
 
-    # Enqueue the background job to send the message
-    MessageSendingJob.perform_later(
-      @conversation.id,
-      message_params[:body]
-    )
-    
-    # Create the message locally immediately for a faster UI update upon reload.
-    # This prevents waiting for the background job to finish.
-    @conversation.messages.create!(
+    @message = @conversation.messages.new(
       body: message_params[:body],
       from_me: true,
-      sent_at: Time.current,
-      message_uid: "local_#{SecureRandom.uuid}"
+      sent_at: Time.current 
     )
+    @message.attachment.attach(message_params[:attachment])
 
-    # Redirect back to the conversation, which will reload the page
-    # and show the newly created message.
+    #let's determine if the message type based on the attachement type 
+    if @message.attachment.attached?
+      if @message.attachment.image?
+        @message.message_type = :image
+        elsif  @message.attachment.audio?
+        @message.message_type  = :audio
+      end
+    else
+      @message.message_type = :text
+    end
+
+    if @message.save
+       MessageSendingJob.perform_later(@message.id)
+    end
+
     redirect_to conversation_path(@conversation)
   end
 
   private
 
+
   def message_params
-    params.require(:message).permit(:body)
+    params.require(:message).permit(:body, :attachment)
   end
 end
+

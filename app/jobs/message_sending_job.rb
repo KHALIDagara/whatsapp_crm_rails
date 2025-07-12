@@ -1,21 +1,29 @@
 class MessageSendingJob < ApplicationJob
   queue_as :default
 
-  def perform(conversation_id, message_body)
-    conversation = Conversation.find(conversation_id)
+  def perform(message_id)
+    message = Message.find(message_id)
+    conversation = message.conversation
     account = conversation.account
-
-    # Call the Evolution API to send the message for real.
     api_client = EvolutionApiClient.new
-    response = api_client.send_text(
-      account,
-      conversation.contact_identifier,
-      message_body
-    )
+
+    case message.message_type.to_sym
+    when :text
+      api_client.send_text(account, conversation.contact_identifier, message.body)
     
-    # Optional: Handle sending failure
-    unless response&.success?
-      Rails.logger.error "Failed to send message via Evolution API for conversation #{conversation.id}"
+    when :image
+      # Get the raw base64 content, just like in your script
+      base64_content = Base64.strict_encode64(message.attachment.download)
+
+      # Call the updated method with the correct arguments
+      api_client.send_image(account, conversation.contact_identifier, message.body, base64_content)
+      
+    when :audio
+      # Get the raw base64 content, just like in your script
+      base64_content = Base64.strict_encode64(message.attachment.download)
+
+      # Call the updated method with the correct arguments
+      api_client.send_audio(account, conversation.contact_identifier, base64_content)
     end
   end
 end

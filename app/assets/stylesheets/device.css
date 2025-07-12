@@ -1,0 +1,130 @@
+/*
+* Devise Forms Styling
+*/
+
+/* Variables for easy theme changes */
+:root {
+  --primary-blue: #007bff;
+  --primary-blue-hover: #0056b3;
+  --light-gray-bg: #f8f9fa;
+  --dark-text: #343a40;
+  --border-color: #ced4da;
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --danger-color: #721c24;
+  --danger-bg: #f8d7da;
+  --danger-border: #dc3545;
+}
+
+/* You may need to style the body in your main layout */
+/* For example, in app/views/layouts/application.html.erb */
+/*
+body {
+  background-color: var(--light-gray-bg) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+*/
+
+.devise-form-container {
+  background-color: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  width: 100%;
+  max-width: 420px;
+  margin: 2rem auto; /* Centers the form */
+}
+
+.devise-form-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--dark-text);
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--dark-text);
+}
+
+.form-field em {
+  font-weight: 400;
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.form-actions .btn-primary {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form-actions .btn-primary:hover {
+  background-color: var(--primary-blue-hover);
+}
+
+.devise-shared-links {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.devise-shared-links a {
+  color: var(--primary-blue);
+  text-decoration: none;
+  display: block;
+  margin-top: 8px;
+}
+
+.devise-shared-links a:hover {
+  text-decoration: underline;
+}
+
+/* Error Messages Styling */
+#error_explanation {
+  border: 1px solid var(--danger-border);
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: var(--danger-bg);
+}
+
+#error_explanation h2 {
+  font-size: 16px;
+  margin: 0 0 10px 0;
+  color: var(--danger-color);
+}
+
+#error_explanation ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--danger-color);
+}

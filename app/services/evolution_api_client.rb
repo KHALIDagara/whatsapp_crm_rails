@@ -1,6 +1,6 @@
-# app/services/evolution_api_client.rb
 require 'faraday'
 require 'faraday/retry'
+require 'logger' # Explicitly require logger
 
 class EvolutionApiClient
   BASE_URL = 'http://localhost:8082'.freeze
@@ -10,11 +10,19 @@ class EvolutionApiClient
     # Set up a connection template with default settings
     @connection = Faraday.new(url: BASE_URL) do |faraday|
       faraday.request :retry, { max: 2, interval: 0.5 }
+      
+      # --- ADDED FOR DEBUGGING ---
+      # This logs all request and response details to your Rails log file.
+      # It will show us the headers and the exact body being sent and received.
+      faraday.response :logger, Rails.logger, headers: true, bodies: true, log_level: :debug
+      # --- END OF ADDITION ---
+
       faraday.adapter Faraday.default_adapter
     end
   end
 
-# NEW: Sets the webhook configuration for a given instance.
+  # ... (no changes to set_webhook, create_instance, connection_state, fetch_profile_info, send_text) ...
+  
   def set_webhook(account)
     return nil unless account.webhook_url.present?
     events_to_listen = [
@@ -28,18 +36,16 @@ class EvolutionApiClient
       req.headers['apikey'] = GLOBAL_API_KEY
       req.body = {
         webhook: {
-        url: account.webhook_url,
-        enabled: true,
-        webhookByEvents: true,   
-        events: events_to_listen
-        
-      }
+          url: account.webhook_url,
+          enabled: true,
+          webhookByEvents: true,
+          events: events_to_listen
+        }
       }.to_json
     end
   end
 
-  # Creates a new instance in the Evolution API.
-def create_instance(account)
+  def create_instance(account)
     public_base_url = Rails.application.credentials.app[:public_base_url]
     webhook_full_url = public_base_url + Rails.application.routes.url_helpers.webhooks_receive_path(secret: account.webhook_secret)
 
@@ -50,7 +56,6 @@ def create_instance(account)
         instanceName: account.instance_name,
         token: account.api_key,
         qrcode: true,
-        # UPDATED: Use the phone number from the account object
         number: account.phone_number,
         integration: "WHATSAPP-BAILEYS",
         webhookUrl: webhook_full_url,
@@ -71,26 +76,23 @@ def create_instance(account)
     end
     handle_response(response)
   end
-  # Fetches the connection state for a given instance.
+
   def connection_state(account)
     response = @connection.get("instance/connectionState/#{account.instance_name}") do |req|
-      req.headers['apikey'] = GLOBAL_API_KEY # Use global key
+      req.headers['apikey'] = GLOBAL_API_KEY
     end
     handle_response(response)
   end
 
-  # Fetches profile info after connection.
   def fetch_profile_info(account)
     jid = "#{account.phone_number}@s.whatsapp.net"
     response = @connection.get("chat/fetchProfileInfo/#{jid}") do |req|
-      req.headers['apikey'] = GLOBAL_API_KEY # Use global key
+      req.headers['apikey'] = GLOBAL_API_KEY
     end
     handle_response(response)
   end
 
-    # NEW: Sends a text message via the Evolution API.
   def send_text(account, recipient_number, text)
-    # The recipient number should not have the "@s.whatsapp.net" suffix here.
     clean_recipient_number = recipient_number.split('@').first
 
     @connection.post("message/sendText/#{account.instance_name}") do |req|
@@ -103,11 +105,48 @@ def create_instance(account)
     end
   end
 
+  ### --- UPDATED METHOD --- ###
+  def send_image(account, recipient_number, caption, base64_content)
+    clean_recipient_number = recipient_number.split('@').first
+    
+    # Using the /sendMedia endpoint from your script
+    @connection.post("message/sendMedia/#{account.instance_name}") do |req|
+      req.headers['Content-Type'] = 'application/json'
+      req.headers['apikey'] = GLOBAL_API_KEY
+      # Building the exact JSON payload from your script
+      req.body = {
+        number: clean_recipient_number,
+        mediatype: 'image',
+        media: base64_content,
+        caption: caption
+      }.to_json
+    end
+  end 
+ 
+ 
+def send_audio(account, recipient_number, base64_content)
+    clean_recipient_number = recipient_number.split('@').first
+
+    # Using the /sendWhatsAppAudio endpoint from your script
+    @connection.post("message/sendWhatsAppAudio/#{account.instance_name}") do |req|
+      req.headers['Content-Type'] = 'application/json'
+      req.headers['apikey'] = GLOBAL_API_KEY
+      # Building the exact JSON payload from your script
+      req.body = {
+        number: clean_recipient_number,
+        options: {
+          presence: "recording"
+        },
+        audio: base64_content
+      }.to_json
+    end
+  end 
 
 
-  private
+private
 
   def handle_response(response)
+    # This method already has good logging for errors.
     unless response.success?
       Rails.logger.error "Evolution API Error: Status #{response.status}, Body: #{response.body}"
       return nil

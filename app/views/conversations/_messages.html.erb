@@ -3,15 +3,20 @@
   <h3 class="text-lg font-semibold"><%= conversation.contact_name %></h3>
 </div>
 
-<%# Messages Area - Add a turbo_frame_tag for new messages %>
 <div id="messages" class="flex-1 p-6 overflow-y-auto space-y-4">
   <%= render messages %>
 </div>
 
 <%# Input Form - This is now a real form %>
 <div class="p-4 border-t border-gray-200 bg-gray-50">
-  <%= form_with(model: [conversation, Message.new], class: "flex items-center space-x-3") do |form| %>
+  <%= form_with(model: [conversation, Message.new], class: "flex items-center space-x-3", multipart: true) do |form| %>
     <%= form.text_field :body, class: "w-full p-2 border rounded-md", placeholder: "Type a message...", autocomplete: "off" %>
+
+      <% # styled upload button ..  %> 
+    <%= form.label :attachment, class: "cursor-pointer p-2  rounded-md hover:bg-gray-200" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+            <%= form.file_field :attachment, class: "hidden" %> 
+          <% end %>
     <%= form.submit "Send", class: "px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer" %>
   <% end %>
 </div>
