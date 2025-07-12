@@ -1,15 +1,28 @@
-<div class="flex <%= message.from_me? ? 'justify-end' : 'justify-start' %>">
+<div class="flex my-2 <%= message.from_me? ? 'justify-end' : 'justify-start' %>">
   <div class="max-w-xs md:max-w-md lg:max-w-lg px-3 py-2 rounded-lg <%= message.from_me? ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800' %>">
     
     <%# Render attachment if it exists %>
     <% if message.attachment.attached? %>
       <% if message.attachment.image? %>
-        <%= image_tag message.attachment, class: "rounded-md mb-2" %>
+        <%# --- IMAGE ATTACHMENT --- %>
+        <%= image_tag message.attachment, class: "rounded-md mb-2 max-w-full h-auto" %>
+
       <% elsif message.attachment.audio? %>
+        <%# --- AUDIO ATTACHMENT --- %>
+        <%# This renders the standard HTML5 audio player with controls. %>
+        <%# The 'w-full' class makes it responsive to the message bubble width. %>
         <audio controls class="w-full my-2">
           <source src="<%= url_for(message.attachment) %>" type="<%= message.attachment.content_type %>">
           Your browser does not support the audio element.
         </audio>
+
+      <% else %>
+        <%# --- GENERIC FILE ATTACHMENT --- %>
+        <%# This handles any other file type, like PDFs, by creating a download link. %>
+        <div class="my-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center gap-3">
+          <svg class="w-6 h-6 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <%= link_to message.attachment.filename, url_for(message.attachment), target: "_blank", class: "underline" %>
+        </div>
       <% end %>
     <% end %>
 
@@ -18,6 +31,7 @@
       <p><%= message.body %></p>
     <% end %>
     
+    <%# Timestamp %>
     <p class="text-xs text-right mt-1 <%= message.from_me? ? 'text-blue-100' : 'text-gray-500' %>">
       <%= message.sent_at.strftime("%I:%M %p") %>
     </p>
