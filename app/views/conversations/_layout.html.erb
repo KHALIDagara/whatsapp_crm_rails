@@ -1,3 +1,20 @@
+<%# ... (the existing div layout for the chat UI) ... %>
+
+
+<%# --- ADD THIS SCRIPT BLOCK FOR DEBUGGING --- %>
+<script>
+  // This runs after the page has loaded.
+  document.addEventListener("DOMContentLoaded", () => {
+    // Check if the Turbo library is available on the window object.
+    if (window.Turbo) {
+      console.log("✅ Turbo library is loaded and active on this page.");
+    } else {
+      console.error("❌ FATAL: Turbo library is NOT loaded on this page.");
+    }
+  });
+</script>
+
+
 <div class="flex h-[calc(100vh-4rem)]">
   <%# Left Pane: Conversations List %>
   <div class="w-1/3 border-r border-gray-200 overflow-y-auto">
@@ -20,6 +37,7 @@
   <div class="w-2/3 flex flex-col">
     <% if @conversation %>
       <%# If a conversation is selected, show its messages %>
+      <%= turbo_stream_from @conversation %>
       <%= render 'conversations/messages', conversation: @conversation, messages: @messages %>
     <% else %>
       <%# Otherwise, show the placeholder %>

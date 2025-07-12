@@ -9,4 +9,5 @@ class Message < ApplicationRecord
     audio: "audio"
   }
 
+  after_create_commit { broadcast_append_to conversation } 
 end
