@@ -1,2 +1,4 @@
-web: bin/rails server
+web: bin/rails server --port 4000
+js: npm run build:watch
 css: bin/rails tailwindcss:watch
+js: yarn build --watch

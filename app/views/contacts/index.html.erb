@@ -1,58 +1,66 @@
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-semibold text-gray-800">Contacts</h1>
-  <%# We will add a "New Contact" button here in a future step %>
-</div>
-
-<div class="bg-white p-6 rounded-lg shadow-md">
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm text-left text-gray-500">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-        <tr>
-          <th scope="col" class="px-6 py-3">Name</th>
-          <th scope="col" class="px-6 py-3">WhatsApp Number</th>
-          <th scope="col" class="px-6 py-3">Country</th>
-          <th scope="col" class="px-6 py-3">Status</th>
-          <th scope="col" class="px-6 py-3">Tags</th>
-          <th scope="col" class="px-6 py-3">Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @contacts.each do |contact| %>
-          <tr class="bg-white border-b hover:bg-gray-50">
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-              <%= contact.name %>
-            </td>
-            <td class="px-6 py-4">
-              <%= contact.whatsapp_number %>
-            </td>
-            <td class="px-6 py-4">
-              <%= contact.country %>
-            </td>
-            <td class="px-6 py-4">
-              <span class="px-2 py-1 text-xs font-medium rounded-full
-                <%== { pending: 'bg-yellow-100 text-yellow-800', 
-                       phase_1: 'bg-blue-100 text-blue-800', 
-                       phase_2: 'bg-indigo-100 text-indigo-800', 
-                       phase_3: 'bg-purple-100 text-purple-800'
-                     }.fetch(contact.status.to_sym, 'bg-gray-100 text-gray-800') %>">
-                <%= contact.status.humanize.titleize %>
-              </span>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex flex-wrap gap-1">
-                <% contact.tags.each do |tag| %>
-                  <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
-                    <%= tag.name %>
-                  </span>
-                <% end %>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-gray-600 max-w-xs truncate">
-              <%= contact.notes %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<div data-controller="bulk-selection">
+  
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold text-gray-800">Contacts</h1>
   </div>
+
+  <%= form_with url: contacts_path, method: :get, class: "mb-6" do |form| %>
+    <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        
+        <%= form.select :by_country, 
+                        options_for_select(current_user.contacts.select(:country).distinct.pluck(:country), params[:by_country]), 
+                        { include_blank: 'All Countries' }, 
+                        class: "p-2 border rounded-md text-sm" %>
+
+        <%= form.select :by_status, 
+                        options_for_select(Contact.statuses.keys.map { |s| [s.humanize.titleize, s] }, params[:by_status]), 
+                        { include_blank: 'All Statuses' }, 
+                        class: "p-2 border rounded-md text-sm" %>
+        
+        <%= form.text_field :by_tag, 
+                            value: params[:by_tag], 
+                            class: "p-2 border rounded-md text-sm", 
+                            placeholder: "Filter by tag..." %>
+
+        <div class="flex items-center justify-end space-x-4">
+          <%= link_to "Clear", contacts_path, class: "text-sm text-gray-600 hover:text-blue-600" %>
+          <%= form.submit "Filter", class: "px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer" %>
+        </div>
+
+      </div>
+    </div>
+  <% end %>
+
+  <%= form_with url: bulk_update_contacts_path, method: :patch do |form| %>
+    <div class="bg-white rounded-lg shadow-md border border-gray-200">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-700">
+          <thead class="text-xs text-gray-600 uppercase bg-blue-50">
+            <tr>
+              <th scope="col" class="p-4">
+                <input type="checkbox" 
+                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                       data-bulk-selection-target="selectAll"
+                       data-action="click->bulk-selection#toggleAll">
+              </th>
+              <th scope="col" class="px-6 py-3">Name</th>
+              <th scope="col" class="px-6 py-3">WhatsApp Number</th>
+              <th scope="col" class="px-6 py-3">Country</th>
+              <th scope="col" class="px-6 py-3">Status</th>
+              <th scope="col" class="px-6 py-3">Tags</th>
+              <th scope="col" class="px-6 py-3">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= render @contacts %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <%= form.submit "Save All Changes", class: "px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring cursor-pointer", data: { turbo_submits_with: "Saving..." } %>
+    </div>
+  <% end %>
 </div>

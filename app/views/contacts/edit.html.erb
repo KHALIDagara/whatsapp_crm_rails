@@ -1,0 +1,31 @@
+<%# This form is also wrapped in a Turbo Frame with the same unique ID %>
+<%= turbo_frame_tag @contact do %>
+  <%= form_with(model: @contact, class: "contents") do |form| %>
+    <tr class="bg-blue-50 border-b">
+      <td class="px-6 py-4">
+        <%= form.text_field :name, class: "w-full p-1 border rounded-md" %>
+      </td>
+      <td class="px-6 py-4">
+        <%= form.text_field :whatsapp_number, class: "w-full p-1 border rounded-md" %>
+      </td>
+      <td class="px-6 py-4">
+        <%= form.text_field :country, class: "w-full p-1 border rounded-md" %>
+      </td>
+      <td class="px-6 py-4">
+        <%= form.select :status, Contact.statuses.keys.map { |s| [s.humanize.titleize, s] }, {}, class: "w-full p-1 border rounded-md" %>
+      </td>
+      <td class="px-6 py-4">
+        <%= form.text_field :tag_list, value: @contact.tag_list.to_s, class: "w-full p-1 border rounded-md", placeholder: "tag1, tag2, ..." %>
+      </td>
+      <td class="px-6 py-4">
+        <%= form.text_field :notes, class: "w-full p-1 border rounded-md" %>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <div class="flex items-center space-x-2">
+          <%= form.submit "Save", class: "font-medium text-green-600 hover:underline cursor-pointer" %>
+          <%= link_to "Cancel", @contact, class: "font-medium text-red-600 hover:underline" %>
+        </div>
+      </td>
+    </tr>
+  <% end %>
+<% end %>

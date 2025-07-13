@@ -25,7 +25,9 @@ Rails.application.routes.draw do
     resources :messages, only: :create
   end
 
-  resources :contacts, only: [:index, :new, :create, :edit, :update, :destroy]
+  resources :contacts, only: [:index, :new, :create, :edit, :update, :destroy] do
+  patch :bulk_update, on: :collection
+  end
 
 
   resources :accounts, only: [:index, :new, :create, :destroy , :edit, :update]  do
