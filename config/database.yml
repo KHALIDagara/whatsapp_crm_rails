@@ -1,5 +1,5 @@
-# PostgreSQL. Versions 9.3 and up are supported.
-#
+# /config/database.yml
+
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -7,38 +7,12 @@ default: &default
 
 development:
   <<: *default
-  # ⬇️ DEVELOPMENT DATABASE DETAILS ⬇️
-  database: railway
-  username: postgres
-  password: 'YbdWYHpubDPEeJmemgHjMMLLAiEssImW'
-  host: 'hopper.proxy.rlwy.net'
-  port: 28418
+  database: saasmaroc_development
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
   <<: *default
   database: saasmaroc_test
 
 production:
-  primary: &primary_production
-    <<: *default
-    # ⬇️ PRODUCTION DATABASE DETAILS ⬇️
-    database: railway
-    username: postgres
-    password: 'YbdWYHpubDPEeJmemgHjMMLLAiEssImW'
-    host: 'hopper.proxy.rlwy.net'
-    port: 28418
-  cache:
-    <<: *primary_production
-    database: railway_cache # Adjusted name for clarity
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: railway_queue # Adjusted name for clarity
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: railway_cable # Adjusted name for clarity
-    migrations_paths: db/cable_migrate
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>

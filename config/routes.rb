@@ -1,5 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  get "contacts/index"
   mount ActionCable.server => '/cable'
 
   get "messages/create"
@@ -15,12 +16,16 @@ Rails.application.routes.draw do
     root to: "devise/sessions#new"
   end
 
+  
   get 'dashboard', to: 'dashboard#index'
+  get 'contacts', to: 'contacts#index'
 
   # Add :new to this line to generate the new_account_path
   resources :conversations, only: [:index, :show] do 
     resources :messages, only: :create
   end
+
+  resources :contacts, only: [:index, :new, :create, :edit, :update, :destroy]
 
 
   resources :accounts, only: [:index, :new, :create, :destroy , :edit, :update]  do

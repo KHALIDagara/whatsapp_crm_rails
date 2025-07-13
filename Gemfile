@@ -71,3 +71,5 @@ gem "faraday", "~> 2.13"
 gem "faraday-retry"
 
 gem "rqrcode", "~> 3.1"
+
+gem "acts-as-taggable-on", "~> 12.0"
