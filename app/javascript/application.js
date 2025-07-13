@@ -1,11 +1,16 @@
-// Add a log at the very top to see if this file runs at all.
-console.log("🚀 application.js has started executing...");
+// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+console.log("🚀 application.js loading...");
 
+// Import Turbo first
 import "@hotwired/turbo-rails"
-import "./controllers"
+console.log("✅ Turbo loaded");
 
-// This line is the most important for real-time features.
-import "./channels" 
+// Import Stimulus
+import "controllers"
+console.log("✅ Controllers loaded");
 
-// Add a log at the end to confirm it finished.
-console.log("✅ application.js has finished importing.");
+// Import ActionCable channels
+import "channels"
+console.log("✅ Channels loaded");
+
+console.log("✅ Application.js fully loaded");
