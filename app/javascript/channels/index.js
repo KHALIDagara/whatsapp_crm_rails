@@ -1,4 +1,4 @@
 // Import all the channels to be used by Action Cable
 
-import "./consumer"
-import "./conversation_channel"
+import "./consumer.js"
+import "./conversation_channel.js"
