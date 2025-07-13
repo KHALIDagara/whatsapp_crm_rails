@@ -1,7 +1,5 @@
 <%= fields_for "contacts[#{contact.id}]", contact do |fields| %>
-  <%# The background color of the row now changes based on the contact's status %>
   <tr class="<%= status_row_class(contact.status) %> border-b">
-    <%# Checkbox for each row %>
     <td class="w-4 p-4">
       <input type="checkbox" name="contact_ids[]" value="<%= contact.id %>" 
              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
@@ -12,7 +10,6 @@
     
     <td class="px-2 py-1"><%= fields.text_field :name, class: base_input_classes %></td>
     
-    <%# WhatsApp number is now green %>
     <td class="px-2 py-1"><%= fields.text_field :whatsapp_number, class: "#{base_input_classes} text-green-600 font-medium" %></td>
     
     <td class="px-2 py-1"><%= fields.text_field :country, class: base_input_classes %></td>
@@ -28,8 +25,6 @@
       </div>
     </td>
     
-    <%# Note: A true pill-based tag editor requires a dedicated JavaScript library. %>
-    <%# For now, this text field is styled to be clean and simple. %>
     <td class="px-2 py-1"><%= fields.text_field :tag_list, value: contact.tag_list.to_s, class: base_input_classes, placeholder: "tag1, tag2..." %></td>
     
     <td class="px-2 py-1"><%= fields.text_field :notes, class: base_input_classes %></td>
