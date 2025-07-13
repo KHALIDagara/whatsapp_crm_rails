@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  campaign: one
+  contact: one
+  status: MyString
+
+two:
+  campaign: two
+  contact: two
+  status: MyString
