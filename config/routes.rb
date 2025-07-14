@@ -1,43 +1,36 @@
-# config/routes.rb
 Rails.application.routes.draw do
-  get "contacts/index"
+  # Mount the real-time server at the top.
   mount ActionCable.server => '/cable'
 
-  get "messages/create"
-  get "conversations/index"
-  get "conversations/show"
+  # Set up all Devise routes for user authentication.
   devise_for :users
 
+  # Define the root pages for logged-in and logged-out users.
   authenticated :user do
-    root 'accounts#index', as: :authenticated_root
+    root 'contacts#index', as: :authenticated_root # Default to contacts page
   end
 
   devise_scope :user do
     root to: "devise/sessions#new"
   end
 
-  
-  get 'dashboard', to: 'dashboard#index'
-  get 'contacts', to: 'contacts#index'
-
-  # Add :new to this line to generate the new_account_path
-  resources :conversations, only: [:index, :show] do 
-    resources :messages, only: :create
-  end
-
-  resources :contacts, only: [:index, :new, :create, :edit, :update, :destroy] do
-  patch :bulk_update, on: :collection
-  end
-
-
-  resources :accounts, only: [:index, :new, :create, :destroy , :edit, :update]  do
+  # Define all the application's resources cleanly.
+  resources :accounts, only: [:index, :new, :create, :edit, :update, :destroy] do
     member do
       get :status
     end
   end
-   # --- NEW WEBHOOK ROUTE ---
-  # This creates a public-facing URL to receive POST requests from the Evolution API.
-  # The :secret parameter makes the URL unique and secure for each account.
-  # e.g., POST /webhooks/receive/a-very-long-and-random-secret
+
+  resources :conversations, only: [:index, :show] do
+    resources :messages, only: :create
+  end
+  
+  resources :contacts, only: [:index, :new, :create, :edit, :update, :destroy] do
+    patch :bulk_update, on: :collection
+  end
+
+  resources :campaigns, only: [:new, :create, :show]
+
+  # This is the public endpoint for receiving webhooks.
   post 'webhooks/receive/:secret', to: 'webhooks#receive', as: :webhooks_receive
 end

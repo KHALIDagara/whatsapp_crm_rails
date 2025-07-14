@@ -1,0 +1,33 @@
+<div class="w-full max-w-2xl mx-auto">
+  <h1 class="text-2xl font-semibold text-gray-800 mb-6">New Bulk Message Campaign</h1>
+  <p class="mb-2 text-sm text-gray-600">You are sending a message to <%= @contacts.count %> contact(s).</p>
+
+  <div class="bg-white p-8 rounded-lg shadow-md">
+    <%= form_with(model: @campaign, class: "space-y-6") do |form| %>
+
+      <%# Hidden field to pass the contact IDs along %>
+      <%= hidden_field_tag "campaign[contact_ids]", @contact_ids.join(',') %>
+
+      <div>
+        <%= form.label :account_id, "Send From Account", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.collection_select :account_id, @accounts, :id, :name, { prompt: "Select an account" }, class: "mt-1 w-full p-2 border rounded-md" %>
+      </div>
+
+      <div>
+        <%= form.label :message_body, "Message Content", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_area :message_body, rows: 6, class: "mt-1 w-full p-2 border rounded-md", placeholder: "Type your message here. Use {{contact.name}} for personalization." %>
+        <p class="mt-1 text-xs text-gray-500">Variables like {{contact.name}} will be replaced for each contact.</p>
+      </div>
+
+      <div>
+        <%= form.label :attachment, "Attach Image or Audio", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.file_field :attachment, class: "mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <%= link_to "Cancel", contacts_path, class: "px-5 py-2 mr-4 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200" %>
+        <%= form.submit "Create Campaign", class: "px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring cursor-pointer", data: { turbo_submits_with: "Creating..." } %>
+      </div>
+    <% end %>
+  </div>
+</div>
